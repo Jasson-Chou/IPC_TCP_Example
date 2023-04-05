@@ -100,6 +100,7 @@ namespace IPCService
                         {
                             isReading = true;
                             timeoutWatch.Restart();
+                            System.Threading.Thread.Sleep(100);
                         }
 
                         int receiveCnt = socket.Receive(clientPackage.Buffer, totalReceiveCnt, TCPSpec.Instance.BufferTotalBytes, SocketFlags.None);

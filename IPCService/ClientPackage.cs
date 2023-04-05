@@ -54,6 +54,7 @@ namespace IPCService
             try
             {
                 socket.Send(buffer);
+                
             }
             catch (ArgumentNullException ane)
             {
