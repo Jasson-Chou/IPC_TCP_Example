@@ -24,10 +24,55 @@ namespace TestIPC
             Thread.Sleep(1000); //waiting for server listen accept.
             client.Write(new byte[1] { 0xFF });
 
-            Console.ReadLine();
+            string arg = string.Empty;
+            do
+            {
+                arg = Console.ReadLine();
+                var values = ParseArgument(arg);
+                if (values is null && !arg.ToLower().Contains("exit"))
+                {
+                    Console.WriteLine("Input Error");
+                }
+                else
+                {
+                    client.Write(values.ToArray());
+                }
+
+
+            } while (!arg.ToLower().Contains("exit"));
+                
 
             client.Close();
             ipcServer.Close();
+        }
+
+        static IReadOnlyList<byte> ParseArgument(string arg)
+        {
+            var buffer = new List<byte>();
+            var args = arg.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            try
+            {
+                foreach (var para in args)
+                {
+                    var value = para.Trim();
+                    if (value.StartsWith("0x"))
+                    {
+                        var byteValue = Convert.ToByte(value.Remove(0, 2), 16);
+                        buffer.Add(byteValue);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+            }
+            catch(Exception ex) 
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+            
+            return buffer.Count == 0 ? null : buffer;
         }
 
         private static void IpcServer_OnIPCReceiveSocketError(System.Net.Sockets.SocketError socketError)
